@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Bot</title>
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #171a21; color: white; }
+        .box { background: #1b2838; padding: 20px; border-radius: 8px; max-width: 500px; margin: 40px auto; box-shadow: 0 0 20px rgba(0,0,0,.5); }
+        input[type="text"] { width: 100%; padding: 10px; border-radius: 4px; border: none; margin-bottom: 10px; box-sizing: border-box; background: #2a3f5a; color: white; }
+        button { background: #66c0f4; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; }
+        button:hover { background: #4a9ecb; }
+    </style>
+</head>
+<body>
+
+    <div class="box">
+        <h2>Falar pelo Bot</h2>
+        <p>Digite e clique para enviar ao Discord:</p>
+        <input type="text" id="mensagemInput" placeholder="Escreva algo..." autocomplete="off">
+        <button id="enviarBtn">Enviar Mensagem</button>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
