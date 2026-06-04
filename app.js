@@ -1,5 +1,5 @@
 // PINTE AQUI O LINK DO SEU BOT NO RAILWAY (Quando você gerar ele no passo abaixo)
-const LINK_DO_BOT_RAILWAY = "https://presence-notify-production.up.railway.app"; 
+const LINK_DO_BOT_RAILWAY = "presence-notify.up.railway.app"; 
 
 const socket = io(LINK_DO_BOT_RAILWAY);
 
