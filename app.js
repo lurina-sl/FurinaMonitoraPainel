@@ -1,4 +1,5 @@
-const LINK_DO_BOT_RAILWAY = "presence-notify.up.railway.app";
+const LINK_DO_BOT_RAILWAY =
+"presence-notify.up.railway.app";
 
 const socket = io(LINK_DO_BOT_RAILWAY);
 
