@@ -1,27 +1,162 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel do Bot</title>
-    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 20px; background: #171a21; color: white; }
-        .box { background: #1b2838; padding: 20px; border-radius: 8px; max-width: 500px; margin: 40px auto; box-shadow: 0 0 20px rgba(0,0,0,.5); }
-        input[type="text"] { width: 100%; padding: 10px; border-radius: 4px; border: none; margin-bottom: 10px; box-sizing: border-box; background: #2a3f5a; color: white; }
-        button { background: #66c0f4; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; }
-        button:hover { background: #4a9ecb; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Furina Monitora</title>
+
+<script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+
+<style>
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#171a21;
+    color:white;
+}
+
+.container{
+    display:flex;
+    height:100vh;
+}
+
+.sidebar{
+    width:250px;
+    background:#11151b;
+    padding:20px;
+}
+
+.sidebar button{
+    width:100%;
+    margin-bottom:10px;
+}
+
+.main{
+    flex:1;
+    padding:20px;
+}
+
+.messages{
+    height:500px;
+    overflow-y:auto;
+    background:#1b2838;
+    padding:15px;
+    border-radius:10px;
+}
+
+.message{
+    margin-bottom:10px;
+    padding:10px;
+    background:#243447;
+    border-radius:8px;
+}
+
+input,
+textarea,
+select{
+    width:100%;
+    padding:10px;
+    margin-top:10px;
+    border:none;
+    border-radius:6px;
+    background:#2f4259;
+    color:white;
+}
+
+button{
+    margin-top:10px;
+    padding:10px;
+    border:none;
+    border-radius:6px;
+    background:#66c0f4;
+    color:white;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#4da8dc;
+}
+
+#voicePage{
+    display:none;
+}
+
+</style>
 </head>
 <body>
 
-    <div class="box">
-        <h2>Falar pelo Bot</h2>
-        <p>Digite e clique para enviar ao Discord:</p>
-        <input type="text" id="mensagemInput" placeholder="Escreva algo..." autocomplete="off">
-        <button id="enviarBtn">Enviar Mensagem</button>
-    </div>
+<div class="container">
 
-    <script src="app.js"></script>
+<div class="sidebar">
+
+<h2>Furina</h2>
+
+<button onclick="abrirChat()">
+💬 Chat
+</button>
+
+<button onclick="abrirVoice()">
+🎙️ Call
+</button>
+
+</div>
+
+<div class="main">
+
+<div id="chatPage">
+
+<h2>Chat em Tempo Real</h2>
+
+<div id="messages" class="messages"></div>
+
+<input
+id="mensagemInput"
+placeholder="Digite uma mensagem"
+>
+
+<button id="enviarBtn">
+Enviar
+</button>
+
+</div>
+
+<div id="voicePage">
+
+<h2>Controle de Call</h2>
+
+<select id="voiceChannel">
+<option value="">
+Selecione um canal
+</option>
+</select>
+
+<button id="joinVoice">
+Entrar na Call
+</button>
+
+<button id="leaveVoice">
+Sair da Call
+</button>
+
+<textarea
+id="ttsText"
+rows="5"
+placeholder="Digite algo para o bot falar"
+></textarea>
+
+<button id="speakBtn">
+Falar na Call
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<script src="app.js"></script>
+
 </body>
 </html>
