@@ -3,108 +3,168 @@ const LINK_DO_BOT_RAILWAY =
 
 const socket = io(LINK_DO_BOT_RAILWAY);
 
+// ==================== ELEMENTOS ====================
+
 const input = document.getElementById("mensagemInput");
 const enviarBtn = document.getElementById("enviarBtn");
 
 const messages =
 document.getElementById("messages");
 
-function abrirChat(){
+// ==================== ABAS ====================
 
-document.getElementById("chatPage")
-.style.display = "block";
+function abrirChat() {
 
-document.getElementById("voicePage")
-.style.display = "none";
+    document.getElementById("chatPage")
+        .style.display = "block";
 
-}
-
-function abrirVoice(){
-
-document.getElementById("chatPage")
-.style.display = "none";
-
-document.getElementById("voicePage")
-.style.display = "block";
+    document.getElementById("voicePage")
+        .style.display = "none";
 
 }
 
-function enviarMensagem(){
+function abrirVoice() {
 
-const texto = input.value;
+    document.getElementById("chatPage")
+        .style.display = "none";
 
-if(!texto.trim()) return;
+    document.getElementById("voicePage")
+        .style.display = "block";
 
-socket.emit("enviarParaDiscord",{
-    mensagem:texto
-});
+}
 
-input.value = "";
+// ==================== ENVIAR MENSAGEM ====================
+
+function enviarMensagem() {
+
+    const texto = input.value;
+
+    if (!texto.trim()) return;
+
+    socket.emit("enviarParaDiscord", {
+        mensagem: texto
+    });
+
+    input.value = "";
 
 }
 
 enviarBtn.addEventListener(
-"click",
-enviarMensagem
+    "click",
+    enviarMensagem
 );
 
 input.addEventListener(
-"keypress",
-e=>{
-    if(e.key==="Enter")
-        enviarMensagem();
-}
+    "keypress",
+    (e) => {
+
+        if (e.key === "Enter") {
+            enviarMensagem();
+        }
+
+    }
 );
 
-socket.on("novaMensagem", msg => {
+// ==================== RECEBER MENSAGENS ====================
 
-const div =
-document.createElement("div");
+socket.on("novaMensagem", (msg) => {
 
-div.className = "message";
+    const div =
+        document.createElement("div");
 
-div.innerHTML = `
-<b>${msg.usuario}</b><br>
-${msg.conteudo}
-`;
+    div.className = "message";
 
-messages.appendChild(div);
+    div.innerHTML = `
+        <div style="
+            display:flex;
+            gap:10px;
+            align-items:flex-start;
+        ">
 
-messages.scrollTop =
-messages.scrollHeight;
+            <img
+                src="${msg.avatar}"
+                width="40"
+                height="40"
+                style="
+                    border-radius:50%;
+                    object-fit:cover;
+                "
+            >
+
+            <div>
+                <b>${msg.usuario}</b>
+                <small style="opacity:.7;">
+                    ${msg.horario}
+                </small>
+                <br>
+                ${msg.conteudo}
+            </div>
+
+        </div>
+    `;
+
+    messages.appendChild(div);
+
+    messages.scrollTop =
+        messages.scrollHeight;
+
+});
+
+// ==================== CALL ====================
+
+const joinBtn =
+document.getElementById("joinVoice");
+
+const leaveBtn =
+document.getElementById("leaveVoice");
+
+const speakBtn =
+document.getElementById("speakBtn");
+
+joinBtn.addEventListener("click", () => {
+
+    socket.emit("joinVoice", {
+        channelId:
+        document.getElementById("voiceChannel")
+            .value
+    });
 
 });
 
-document
-.getElementById("joinVoice")
-.addEventListener("click",()=>{
+leaveBtn.addEventListener("click", () => {
 
-socket.emit("joinVoice",{
-channelId:
-document.getElementById("voiceChannel")
-.value
-});
+    socket.emit("leaveVoice");
 
 });
 
-document
-.getElementById("leaveVoice")
-.addEventListener("click",()=>{
+speakBtn.addEventListener("click", () => {
 
-socket.emit("leaveVoice");
+    const texto =
+        document.getElementById("ttsText")
+            .value;
+
+    if (!texto.trim()) return;
+
+    socket.emit("ttsSpeak", {
+        texto
+    });
+
+});
+
+// ==================== CONEXÃO ====================
+
+socket.on("connect", () => {
+
+    console.log(
+        "✅ Conectado ao bot"
+    );
 
 });
 
-document
-.getElementById("speakBtn")
-.addEventListener("click",()=>{
+socket.on("disconnect", () => {
 
-socket.emit("ttsSpeak",{
-
-texto:
-document.getElementById("ttsText")
-.value
-
-});
+    console.log(
+        "❌ Desconectado do bot"
+    );
 
 });
