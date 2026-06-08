@@ -1,45 +1,36 @@
-const LINK_DO_BOT_RAILWAY =
-"https://presence-notify.up.railway.app";
+const API_URL =
+"https://presence-notify-production.up.railway.app";
 
-const socket = io(LINK_DO_BOT_RAILWAY);
-
-// ==================== ELEMENTOS ====================
-
-const input = document.getElementById("mensagemInput");
-const enviarBtn = document.getElementById("enviarBtn");
+const socket = io(API_URL);
 
 const messages =
 document.getElementById("messages");
 
-// ==================== ABAS ====================
+const status =
+document.getElementById("status");
 
-function abrirChat() {
+const input =
+document.getElementById("mensagemInput");
 
-    document.getElementById("chatPage")
-        .style.display = "block";
+// ================= CHAT =================
 
-    document.getElementById("voicePage")
-        .style.display = "none";
+document
+.getElementById("enviarBtn")
+.addEventListener("click", enviarMensagem);
 
-}
+input.addEventListener("keydown", (e) => {
 
-function abrirVoice() {
+    if (e.key === "Enter") {
+        enviarMensagem();
+    }
 
-    document.getElementById("chatPage")
-        .style.display = "none";
-
-    document.getElementById("voicePage")
-        .style.display = "block";
-
-}
-
-// ==================== ENVIAR MENSAGEM ====================
+});
 
 function enviarMensagem() {
 
-    const texto = input.value;
+    const texto = input.value.trim();
 
-    if (!texto.trim()) return;
+    if (!texto) return;
 
     socket.emit("enviarParaDiscord", {
         mensagem: texto
@@ -49,122 +40,225 @@ function enviarMensagem() {
 
 }
 
-enviarBtn.addEventListener(
-    "click",
-    enviarMensagem
-);
-
-input.addEventListener(
-    "keypress",
-    (e) => {
-
-        if (e.key === "Enter") {
-            enviarMensagem();
-        }
-
-    }
-);
-
-// ==================== RECEBER MENSAGENS ====================
+// ================= MENSAGENS =================
 
 socket.on("novaMensagem", (msg) => {
 
     const div =
-        document.createElement("div");
+    document.createElement("div");
 
     div.className = "message";
 
     div.innerHTML = `
-        <div style="
-            display:flex;
-            gap:10px;
-            align-items:flex-start;
-        ">
-
-            <img
-                src="${msg.avatar}"
-                width="40"
-                height="40"
-                style="
-                    border-radius:50%;
-                    object-fit:cover;
-                "
-            >
-
-            <div>
-                <b>${msg.usuario}</b>
-                <small style="opacity:.7;">
-                    ${msg.horario}
-                </small>
-                <br>
-                ${msg.conteudo}
-            </div>
-
-        </div>
+        <b>${msg.usuario}</b>
+        <br>
+        ${msg.conteudo}
     `;
 
     messages.appendChild(div);
 
     messages.scrollTop =
-        messages.scrollHeight;
+    messages.scrollHeight;
 
 });
 
-// ==================== CALL ====================
+// ================= STATUS =================
 
-const joinBtn =
-document.getElementById("joinVoice");
+socket.on("online", (data) => {
 
-const leaveBtn =
-document.getElementById("leaveVoice");
+    const div =
+    document.createElement("div");
 
-const speakBtn =
-document.getElementById("speakBtn");
+    div.innerHTML =
+    `🟢 ${data.user} entrou (${data.time})`;
 
-joinBtn.addEventListener("click", () => {
-
-    socket.emit("joinVoice", {
-        channelId:
-        document.getElementById("voiceChannel")
-            .value
-    });
+    status.prepend(div);
 
 });
 
-leaveBtn.addEventListener("click", () => {
+socket.on("offline", (data) => {
 
-    socket.emit("leaveVoice");
+    const div =
+    document.createElement("div");
 
-});
+    div.innerHTML =
+    `🔴 ${data.user} saiu (${data.time})`;
 
-speakBtn.addEventListener("click", () => {
-
-    const texto =
-        document.getElementById("ttsText")
-            .value;
-
-    if (!texto.trim()) return;
-
-    socket.emit("ttsSpeak", {
-        texto
-    });
+    status.prepend(div);
 
 });
 
-// ==================== CONEXÃO ====================
+// ================= SERVIDORES =================
 
-socket.on("connect", () => {
+async function carregarServidores() {
 
-    console.log(
-        "✅ Conectado ao bot"
+    try {
+
+        const resposta =
+            await fetch(
+                `${API_URL}/api/guilds`
+            );
+
+        const guilds =
+            await resposta.json();
+
+        const guildSelect =
+            document.getElementById(
+                "guildSelect"
+            );
+
+        guildSelect.innerHTML = "";
+
+        guilds.forEach(guild => {
+
+            const option =
+                document.createElement("option");
+
+            option.value =
+                guild.id;
+
+            option.textContent =
+                `${guild.name} (${guild.members})`;
+
+            guildSelect.appendChild(
+                option
+            );
+
+        });
+
+        if (guilds.length > 0) {
+
+            carregarCanais(
+                guilds[0].id
+            );
+
+        }
+
+    } catch (err) {
+
+        console.error(
+            "Erro servidores:",
+            err
+        );
+
+    }
+
+}
+
+// ================= CANAIS =================
+
+async function carregarCanais(guildId) {
+
+    try {
+
+        const resposta =
+            await fetch(
+                `${API_URL}/api/channels/${guildId}`
+            );
+
+        const canais =
+            await resposta.json();
+
+        const channelSelect =
+            document.getElementById(
+                "channelSelect"
+            );
+
+        channelSelect.innerHTML = "";
+
+        canais.forEach(canal => {
+
+            const option =
+                document.createElement("option");
+
+            option.value =
+                canal.id;
+
+            option.textContent =
+                canal.name;
+
+            channelSelect.appendChild(
+                option
+            );
+
+        });
+
+    } catch (err) {
+
+        console.error(
+            "Erro canais:",
+            err
+        );
+
+    }
+
+}
+
+// ================= TROCA DE SERVIDOR =================
+
+document
+.getElementById("guildSelect")
+.addEventListener("change", (e) => {
+
+    carregarCanais(
+        e.target.value
     );
 
 });
 
-socket.on("disconnect", () => {
+// ================= DEFINIR CANAL =================
 
-    console.log(
-        "❌ Desconectado do bot"
-    );
+document
+.getElementById("definirCanalBtn")
+.addEventListener("click", async () => {
+
+    const channelId =
+        document.getElementById(
+            "channelSelect"
+        ).value;
+
+    if (!channelId) return;
+
+    try {
+
+        const resposta =
+            await fetch(
+                `${API_URL}/api/set-channel`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type":
+                        "application/json"
+                    },
+                    body: JSON.stringify({
+                        channelId
+                    })
+                }
+            );
+
+        const data =
+            await resposta.json();
+
+        if (data.success) {
+
+            alert(
+                "✅ Canal definido!"
+            );
+
+        }
+
+    } catch (err) {
+
+        console.error(err);
+
+        alert(
+            "❌ Erro ao definir canal"
+        );
+
+    }
 
 });
+
+// ================= INICIAR =================
+
+carregarServidores();
