@@ -2,157 +2,59 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>Furina Monitora</title>
+<title>Furina Monitora v25.0.2</title>
+
+<link rel="stylesheet" href="style.css">
 
 <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
-
-<style>
-
-body{
-    margin:0;
-    font-family:Arial,sans-serif;
-    background:#171a21;
-    color:white;
-}
-
-.container{
-    display:flex;
-    height:100vh;
-}
-
-.sidebar{
-    width:250px;
-    background:#11151b;
-    padding:20px;
-}
-
-.sidebar button{
-    width:100%;
-    margin-bottom:10px;
-}
-
-.main{
-    flex:1;
-    padding:20px;
-}
-
-.messages{
-    height:500px;
-    overflow-y:auto;
-    background:#1b2838;
-    padding:15px;
-    border-radius:10px;
-}
-
-.message{
-    margin-bottom:10px;
-    padding:10px;
-    background:#243447;
-    border-radius:8px;
-}
-
-input,
-textarea,
-select{
-    width:100%;
-    padding:10px;
-    margin-top:10px;
-    border:none;
-    border-radius:6px;
-    background:#2f4259;
-    color:white;
-}
-
-button{
-    margin-top:10px;
-    padding:10px;
-    border:none;
-    border-radius:6px;
-    background:#66c0f4;
-    color:white;
-    cursor:pointer;
-}
-
-button:hover{
-    background:#4da8dc;
-}
-
-#voicePage{
-    display:none;
-}
-
-</style>
 </head>
 <body>
 
+<header>
+    <h1>🌊 Furina Monitora</h1>
+</header>
+
 <div class="container">
 
-<div class="sidebar">
+    <div class="chat-box">
 
-<h2>Furina</h2>
+        <select id="guildSelect">
+            <option>Carregando servidores...</option>
+        </select>
 
-<button onclick="abrirChat()">
-💬 Chat
-</button>
+        <select id="channelSelect">
+            <option>Selecione um canal</option>
+        </select>
 
-<button onclick="abrirVoice()">
-🎙️ Call
-</button>
+        <button id="definirCanalBtn">
+            Definir Canal
+        </button>
 
-</div>
+        <div id="messages"></div>
 
-<div class="main">
+        <div class="input-area">
 
-<div id="chatPage">
+            <input
+                id="mensagemInput"
+                placeholder="Digite uma mensagem">
 
-<h2>Chat em Tempo Real</h2>
+            <button id="enviarBtn">
+                Enviar
+            </button>
 
-<div id="messages" class="messages"></div>
+        </div>
 
-<input
-id="mensagemInput"
-placeholder="Digite uma mensagem"
->
+    </div>
 
-<button id="enviarBtn">
-Enviar
-</button>
+    <div class="status-box">
 
-</div>
+        <h2>Monitoramento</h2>
 
-<div id="voicePage">
+        <div id="status"></div>
 
-<h2>Controle de Call</h2>
-
-<select id="voiceChannel">
-<option value="">
-Selecione um canal
-</option>
-</select>
-
-<button id="joinVoice">
-Entrar na Call
-</button>
-
-<button id="leaveVoice">
-Sair da Call
-</button>
-
-<textarea
-id="ttsText"
-rows="5"
-placeholder="Digite algo para o bot falar"
-></textarea>
-
-<button id="speakBtn">
-Falar na Call
-</button>
-
-</div>
-
-</div>
+    </div>
 
 </div>
 
