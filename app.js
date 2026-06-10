@@ -1,8 +1,9 @@
 const API_URL =
     "https://presence-notify-production.up.railway.app";
 
-const socket =
-    io(API_URL);
+const socket = io(API_URL, {
+    transports: ["websocket"]
+});
 
 const messages =
     document.getElementById("messages");
