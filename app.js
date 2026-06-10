@@ -96,17 +96,9 @@ async function carregarServidores() {
 
         const resposta =
             await fetch(
-    `${API_URL}/api/set-channel`,
-    {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            channelId
-        })
-    }
-);
+                `${API_URL}/api/guilds`
+            );
+
         const guilds =
             await resposta.json();
 
