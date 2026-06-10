@@ -1,3 +1,22 @@
+:root {
+
+    --bg: #07111f;
+    --bg2: #0d1c33;
+
+    --card: rgba(255,255,255,.05);
+
+    --border: rgba(255,255,255,.08);
+
+    --hydro: #6fd7ff;
+    --hydro2: #4aaeff;
+
+    --gold: #f0d18c;
+
+    --text: #ecf7ff;
+    --muted: #8da7bf;
+
+}
+
 *{
     margin:0;
     padding:0;
@@ -5,69 +24,502 @@
 }
 
 body{
-    background:#0f172a;
-    color:white;
-    font-family:Arial,sans-serif;
+
+    font-family:Inter,sans-serif;
+
+    background:var(--bg);
+
+    color:var(--text);
+
+    height:100vh;
+
+    overflow:hidden;
+
 }
 
-header{
-    padding:20px;
-    text-align:center;
-    background:#111827;
+.background{
+
+    position:fixed;
+    inset:0;
+
+    background:
+    radial-gradient(circle at top left,#1b6fb633,transparent 40%),
+    radial-gradient(circle at bottom right,#66d8ff22,transparent 40%);
+
+    z-index:-1;
+
 }
 
-.container{
+.layout{
+
     display:flex;
-    gap:20px;
-    padding:20px;
+
+    height:100vh;
+
 }
 
-.chat-box{
-    flex:1;
-    background:#1e293b;
-    padding:20px;
-    border-radius:12px;
-}
+/* SIDEBAR */
 
-.status-box{
+.sidebar{
+
     width:300px;
-    background:#1e293b;
+
     padding:20px;
-    border-radius:12px;
+
+    border-right:1px solid var(--border);
+
+    backdrop-filter:blur(20px);
+
+    background:rgba(0,0,0,.2);
+
 }
 
-select,
-input,
-button{
+.logo{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    margin-bottom:30px;
+
+}
+
+.logo-icon{
+
+    width:60px;
+    height:60px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:30px;
+
+    border-radius:16px;
+
+    background:linear-gradient(
+        135deg,
+        var(--hydro),
+        var(--hydro2)
+    );
+
+}
+
+.logo h1{
+
+    font-size:24px;
+
+}
+
+.logo span{
+
+    color:var(--hydro);
+
+}
+
+.sidebar-card{
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    padding:15px;
+
+    border-radius:18px;
+
+    margin-bottom:15px;
+
+}
+
+.sidebar-card h3{
+
+    margin-bottom:10px;
+
+    color:var(--gold);
+
+}
+
+select{
+
     width:100%;
-    padding:12px;
-    margin-bottom:10px;
+
+    background:#10213a;
+
+    color:white;
+
     border:none;
-    border-radius:8px;
+
+    border-radius:12px;
+
+    padding:12px;
+
 }
 
-button{
+.primary-btn,
+.secondary-btn{
+
+    width:100%;
+
+    padding:14px;
+
+    border:none;
+
+    border-radius:14px;
+
     cursor:pointer;
+
+    margin-top:10px;
+
+    font-weight:600;
+
 }
 
-#messages{
-    height:500px;
+.primary-btn{
+
+    background:linear-gradient(
+        135deg,
+        var(--hydro),
+        var(--hydro2)
+    );
+
+    color:black;
+
+}
+
+.secondary-btn{
+
+    background:var(--card);
+
+    color:white;
+
+    border:1px solid var(--border);
+
+}
+
+/* CHAT */
+
+.chat-section{
+
+    flex:1;
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+.chat-header{
+
+    padding:25px;
+
+    border-bottom:1px solid var(--border);
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+}
+
+.chat-header p{
+
+    color:var(--muted);
+
+}
+
+.connection-status{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+}
+
+.status-dot{
+
+    width:10px;
+    height:10px;
+
+    border-radius:50%;
+
+    background:#4eff87;
+
+    box-shadow:0 0 12px #4eff87;
+
+}
+
+.messages{
+
+    flex:1;
+
     overflow-y:auto;
-    background:#0f172a;
-    border-radius:10px;
-    padding:10px;
-    margin-bottom:10px;
+
+    padding:25px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:15px;
+
 }
 
 .message{
-    background:#334155;
-    padding:10px;
-    border-radius:8px;
-    margin-bottom:8px;
-    word-break:break-word;
+
+    display:flex;
+
+    gap:12px;
+
+    animation:appear .25s ease;
+
 }
 
-#status{
-    max-height:600px;
-    overflow-y:auto;
+@keyframes appear{
+
+    from{
+        opacity:0;
+        transform:translateY(10px);
+    }
+
+    to{
+        opacity:1;
+        transform:none;
+    }
+
+}
+
+.avatar{
+
+    width:45px;
+    height:45px;
+
+    border-radius:50%;
+
+}
+
+.message-body{
+
+    flex:1;
+
+}
+
+.message-top{
+
+    display:flex;
+
+    gap:10px;
+
+    margin-bottom:4px;
+
+}
+
+.message-author{
+
+    color:var(--hydro);
+
+    font-weight:700;
+
+}
+
+.message-time{
+
+    color:var(--muted);
+
+    font-size:12px;
+
+}
+
+.message-content{
+
+    white-space:pre-wrap;
+
+    line-height:1.5;
+
+}
+
+.chat-input{
+
+    padding:20px;
+
+    display:flex;
+
+    gap:10px;
+
+}
+
+.chat-input textarea{
+
+    flex:1;
+
+    resize:none;
+
+    border:none;
+
+    outline:none;
+
+    border-radius:18px;
+
+    background:#10213a;
+
+    color:white;
+
+    padding:15px;
+
+    max-height:250px;
+
+}
+
+.chat-input button{
+
+    width:130px;
+
+    border:none;
+
+    border-radius:18px;
+
+    background:linear-gradient(
+        135deg,
+        var(--hydro),
+        var(--hydro2)
+    );
+
+    cursor:pointer;
+
+    font-weight:700;
+
+}
+
+small{
+
+    text-align:center;
+
+    padding-bottom:10px;
+
+    color:var(--muted);
+
+}
+
+/* RIGHT PANEL */
+
+.right-panel{
+
+    width:300px;
+
+    padding:20px;
+
+    border-left:1px solid var(--border);
+
+}
+
+.panel-card{
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:18px;
+
+    padding:15px;
+
+}
+
+/* MODAL */
+
+.modal{
+
+    position:fixed;
+
+    inset:0;
+
+    background:rgba(0,0,0,.7);
+
+    display:none;
+
+    justify-content:center;
+
+    align-items:center;
+
+}
+
+.modal.active{
+
+    display:flex;
+
+}
+
+.modal-content{
+
+    width:500px;
+
+    background:#0f2038;
+
+    border-radius:25px;
+
+    border:1px solid var(--hydro);
+
+    padding:25px;
+
+}
+
+.modal-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+}
+
+.modal-header button{
+
+    background:none;
+
+    border:none;
+
+    color:white;
+
+    font-size:20px;
+
+    cursor:pointer;
+
+}
+
+.changelog{
+
+    margin:25px 0;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:12px;
+
+}
+
+.modal-actions{
+
+    display:flex;
+
+    gap:10px;
+
+}
+
+.modal-actions button{
+
+    flex:1;
+
+    padding:12px;
+
+    border:none;
+
+    border-radius:12px;
+
+    cursor:pointer;
+
 }
