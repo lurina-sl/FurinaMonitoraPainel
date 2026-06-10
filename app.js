@@ -1,94 +1,45 @@
 const API_URL =
-"https://presence-notify-production.up.railway.app";
+    "presence-notify-production.up.railway.app";
 
-const socket = io(API_URL);
+const socket =
+    io(API_URL);
 
 const messages =
-document.getElementById("messages");
+    document.getElementById("messages");
 
-const status =
-document.getElementById("status");
+const guildSelect =
+    document.getElementById("guildSelect");
 
-const input =
-document.getElementById("mensagemInput");
+const channelSelect =
+    document.getElementById("channelSelect");
 
-// ================= CHAT =================
+const textarea =
+    document.getElementById("mensagemInput");
 
-document
-.getElementById("enviarBtn")
-.addEventListener("click", enviarMensagem);
+const statusDiv =
+    document.getElementById("status");
 
-input.addEventListener("keydown", (e) => {
+/* STATUS SOCKET */
 
-    if (e.key === "Enter") {
-        enviarMensagem();
-    }
+socket.on("connect", () => {
 
-});
-
-function enviarMensagem() {
-
-    const texto = input.value.trim();
-
-    if (!texto) return;
-
-    socket.emit("enviarParaDiscord", {
-        mensagem: texto
-    });
-
-    input.value = "";
-
-}
-
-// ================= MENSAGENS =================
-
-socket.on("novaMensagem", (msg) => {
-
-    const div =
-    document.createElement("div");
-
-    div.className = "message";
-
-    div.innerHTML = `
-        <b>${msg.usuario}</b>
-        <br>
-        ${msg.conteudo}
-    `;
-
-    messages.appendChild(div);
-
-    messages.scrollTop =
-    messages.scrollHeight;
+    document.getElementById(
+        "socketStatus"
+    ).textContent =
+        "Conectado";
 
 });
 
-// ================= STATUS =================
+socket.on("disconnect", () => {
 
-socket.on("online", (data) => {
-
-    const div =
-    document.createElement("div");
-
-    div.innerHTML =
-    `🟢 ${data.user} entrou (${data.time})`;
-
-    status.prepend(div);
+    document.getElementById(
+        "socketStatus"
+    ).textContent =
+        "Desconectado";
 
 });
 
-socket.on("offline", (data) => {
-
-    const div =
-    document.createElement("div");
-
-    div.innerHTML =
-    `🔴 ${data.user} saiu (${data.time})`;
-
-    status.prepend(div);
-
-});
-
-// ================= SERVIDORES =================
+/* SERVIDORES */
 
 async function carregarServidores() {
 
@@ -102,23 +53,20 @@ async function carregarServidores() {
         const guilds =
             await resposta.json();
 
-        const guildSelect =
-            document.getElementById(
-                "guildSelect"
-            );
-
         guildSelect.innerHTML = "";
 
         guilds.forEach(guild => {
 
             const option =
-                document.createElement("option");
+                document.createElement(
+                    "option"
+                );
 
             option.value =
                 guild.id;
 
             option.textContent =
-                `${guild.name} (${guild.members})`;
+                guild.name;
 
             guildSelect.appendChild(
                 option
@@ -126,7 +74,7 @@ async function carregarServidores() {
 
         });
 
-        if (guilds.length > 0) {
+        if (guilds.length) {
 
             carregarCanais(
                 guilds[0].id
@@ -136,18 +84,17 @@ async function carregarServidores() {
 
     } catch (err) {
 
-        console.error(
-            "Erro servidores:",
-            err
-        );
+        console.error(err);
 
     }
 
 }
 
-// ================= CANAIS =================
+/* CANAIS */
 
-async function carregarCanais(guildId) {
+async function carregarCanais(
+    guildId
+) {
 
     try {
 
@@ -159,17 +106,15 @@ async function carregarCanais(guildId) {
         const canais =
             await resposta.json();
 
-        const channelSelect =
-            document.getElementById(
-                "channelSelect"
-            );
-
-        channelSelect.innerHTML = "";
+        channelSelect.innerHTML =
+            "";
 
         canais.forEach(canal => {
 
             const option =
-                document.createElement("option");
+                document.createElement(
+                    "option"
+                );
 
             option.value =
                 canal.id;
@@ -185,80 +130,277 @@ async function carregarCanais(guildId) {
 
     } catch (err) {
 
-        console.error(
-            "Erro canais:",
-            err
-        );
+        console.error(err);
 
     }
 
 }
 
-// ================= TROCA DE SERVIDOR =================
+guildSelect.addEventListener(
+    "change",
+    () => {
 
-document
-.getElementById("guildSelect")
-.addEventListener("change", (e) => {
-
-    carregarCanais(
-        e.target.value
-    );
-
-});
-
-// ================= DEFINIR CANAL =================
-
-document
-.getElementById("definirCanalBtn")
-.addEventListener("click", async () => {
-
-    const channelId =
-        document.getElementById(
-            "channelSelect"
-        ).value;
-
-    if (!channelId) return;
-
-    try {
-
-        const resposta =
-            await fetch(
-                `${API_URL}/api/set-channel`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type":
-                        "application/json"
-                    },
-                    body: JSON.stringify({
-                        channelId
-                    })
-                }
-            );
-
-        const data =
-            await resposta.json();
-
-        if (data.success) {
-
-            alert(
-                "✅ Canal definido!"
-            );
-
-        }
-
-    } catch (err) {
-
-        console.error(err);
-
-        alert(
-            "❌ Erro ao definir canal"
+        carregarCanais(
+            guildSelect.value
         );
 
     }
+);
 
-});
+/* DEFINIR CANAL */
 
-// ================= INICIAR =================
+document
+.getElementById(
+    "definirCanalBtn"
+)
+.addEventListener(
+    "click",
+    async () => {
+
+        await fetch(
+            `${API_URL}/api/set-channel`,
+            {
+                method:"POST",
+                headers:{
+                    "Content-Type":
+                    "application/json"
+                },
+                body:JSON.stringify({
+                    channelId:
+                    channelSelect.value
+                })
+            }
+        );
+
+        alert(
+            "Canal definido."
+        );
+
+    }
+);
+
+/* AUTO RESIZE */
+
+textarea.addEventListener(
+    "input",
+    () => {
+
+        textarea.style.height =
+            "auto";
+
+        textarea.style.height =
+            textarea.scrollHeight +
+            "px";
+
+    }
+);
+
+/* ENVIAR */
+
+function enviarMensagem() {
+
+    const mensagem =
+        textarea.value.trim();
+
+    if (!mensagem) return;
+
+    socket.emit(
+        "enviarParaDiscord",
+        {
+            mensagem
+        }
+    );
+
+    textarea.value = "";
+
+    textarea.style.height =
+        "auto";
+
+}
+
+document
+.getElementById(
+    "enviarBtn"
+)
+.addEventListener(
+    "click",
+    enviarMensagem
+);
+
+textarea.addEventListener(
+    "keydown",
+    e => {
+
+        if (
+            e.key === "Enter" &&
+            !e.shiftKey
+        ) {
+
+            e.preventDefault();
+
+            enviarMensagem();
+
+        }
+
+    }
+);
+
+/* MENSAGENS */
+
+function adicionarMensagem(
+    data
+) {
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+    div.className =
+        "message";
+
+    div.innerHTML = `
+        <img
+            class="avatar"
+            src="${data.avatar}"
+        >
+
+        <div class="message-body">
+
+            <div class="message-top">
+
+                <span class="message-author">
+                    ${data.usuario}
+                </span>
+
+                <span class="message-time">
+                    ${data.horario}
+                </span>
+
+            </div>
+
+            <div class="message-content">
+                ${data.conteudo}
+            </div>
+
+        </div>
+    `;
+
+    messages.appendChild(
+        div
+    );
+
+    messages.scrollTop =
+        messages.scrollHeight;
+
+}
+
+socket.on(
+    "novaMensagem",
+    adicionarMensagem
+);
+
+/* ONLINE */
+
+socket.on(
+    "online",
+    data => {
+
+        statusDiv.innerHTML += `
+            <div>
+                🟢 ${data.user}
+            </div>
+        `;
+
+    }
+);
+
+socket.on(
+    "offline",
+    data => {
+
+        statusDiv.innerHTML += `
+            <div>
+                🔴 ${data.user}
+            </div>
+        `;
+
+    }
+);
+
+/* MODAL */
+
+const modal =
+    document.getElementById(
+        "updatesModal"
+    );
+
+document
+.getElementById(
+    "updatesBtn"
+)
+.onclick =
+() => {
+
+    modal.classList.add(
+        "active"
+    );
+
+};
+
+document
+.getElementById(
+    "closeModal"
+)
+.onclick =
+() => {
+
+    modal.classList.remove(
+        "active"
+    );
+
+};
+
+/* CHANGLEOG */
+
+const changelog =
+`🚀 Atualização 26.0.2
+
+[+] Sistema de canais
+[+] Melhorias Socket.IO
+[+] Novo visual Furina
+[+] Correções de bugs
+[+] Performance aprimorada`;
+
+document
+.getElementById(
+    "copyUpdate"
+)
+.onclick =
+async () => {
+
+    await navigator.clipboard
+    .writeText(
+        changelog
+    );
+
+};
+
+document
+.getElementById(
+    "sendUpdate"
+)
+.onclick =
+() => {
+
+    socket.emit(
+        "enviarParaDiscord",
+        {
+            mensagem:
+            changelog
+        }
+    );
+
+};
 
 carregarServidores();
