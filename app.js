@@ -1,5 +1,5 @@
 const API_URL =
-    "presence-notify-production.up.railway.app";
+    "https://presence-notify-production.up.railway.app";
 
 const socket =
     io(API_URL);
