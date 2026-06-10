@@ -1,44 +1,102 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>Furina Monitora v25.0.2</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Furina Monitora</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="style.css">
 
-<script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+
 </head>
 <body>
 
-<header>
-    <h1>🌊 Furina Monitora</h1>
-</header>
+<div class="background"></div>
 
-<div class="container">
+<div class="layout">
 
-    <div class="chat-box">
+    <aside class="sidebar">
 
-        <select id="guildSelect">
-            <option>Carregando servidores...</option>
-        </select>
+        <div class="logo">
 
-        <select id="channelSelect">
-            <option>Selecione um canal</option>
-        </select>
+            <div class="logo-icon">🌊</div>
 
-        <button id="definirCanalBtn">
-            Definir Canal
+            <div>
+                <h1>Furina</h1>
+                <span>Monitora</span>
+            </div>
+
+        </div>
+
+        <div class="sidebar-card">
+
+            <h3>Servidor</h3>
+
+            <select id="guildSelect">
+                <option>Carregando...</option>
+            </select>
+
+        </div>
+
+        <div class="sidebar-card">
+
+            <h3>Canal</h3>
+
+            <select id="channelSelect">
+                <option>Selecione...</option>
+            </select>
+
+        </div>
+
+        <button id="definirCanalBtn" class="primary-btn">
+            Aplicar Canal
         </button>
 
-        <div id="messages"></div>
+        <button id="updatesBtn" class="secondary-btn">
+            🚀 Atualizações
+        </button>
 
-        <div class="input-area">
+    </aside>
 
-            <input
+    <main class="chat-section">
+
+        <header class="chat-header">
+
+            <div>
+
+                <h2>Monitoramento em Tempo Real</h2>
+
+                <p>Mensagens recebidas diretamente do Discord</p>
+
+            </div>
+
+            <div class="connection-status">
+
+                <span class="status-dot"></span>
+
+                <span id="socketStatus">
+                    Conectando...
+                </span>
+
+            </div>
+
+        </header>
+
+        <div id="messages" class="messages"></div>
+
+        <div class="chat-input">
+
+            <textarea
                 id="mensagemInput"
-                placeholder="Digite uma mensagem">
+                rows="1"
+                placeholder="Digite uma mensagem..."
+            ></textarea>
 
             <button id="enviarBtn">
                 Enviar
@@ -46,13 +104,61 @@
 
         </div>
 
-    </div>
+        <small>
+            Enter para enviar • Shift + Enter para nova linha
+        </small>
 
-    <div class="status-box">
+    </main>
 
-        <h2>Monitoramento</h2>
+    <aside class="right-panel">
 
-        <div id="status"></div>
+        <div class="panel-card">
+
+            <h3>Status</h3>
+
+            <div id="status"></div>
+
+        </div>
+
+    </aside>
+
+</div>
+
+<div id="updatesModal" class="modal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <h2>🚀 Atualização 26.0.2</h2>
+
+            <button id="closeModal">
+                ✕
+            </button>
+
+        </div>
+
+        <div class="changelog">
+
+            <div>[+] Sistema de canais dinâmicos</div>
+            <div>[+] Integração Socket.IO</div>
+            <div>[+] Novo visual Furina</div>
+            <div>[+] Melhorias de estabilidade</div>
+            <div>[+] Correções de bugs</div>
+
+        </div>
+
+        <div class="modal-actions">
+
+            <button id="copyUpdate">
+                Copiar
+            </button>
+
+            <button id="sendUpdate">
+                Enviar Discord
+            </button>
+
+        </div>
 
     </div>
 
