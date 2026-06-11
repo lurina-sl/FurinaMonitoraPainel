@@ -5,10 +5,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Furina Monitora</title>
+<title>Furina Monitora 2.0</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="style.css">
 
@@ -17,19 +17,54 @@
 </head>
 <body>
 
-<div class="background"></div>
+<!-- LOGIN -->
+
+<div id="loginScreen" class="login-screen">
+
+    <div class="login-card">
+
+        <h1>🌊 Furina Monitora</h1>
+
+        <p>Painel Administrativo 2.0</p>
+
+        <input
+            type="password"
+            id="loginPassword"
+            placeholder="Senha do painel"
+        >
+
+        <button id="loginBtn">
+            Entrar
+        </button>
+
+    </div>
+
+</div>
+
+<!-- BACKGROUND -->
+
+<div class="hydro-particles"></div>
+
+<!-- APP -->
 
 <div class="layout">
+
+    <!-- SIDEBAR -->
 
     <aside class="sidebar">
 
         <div class="logo">
 
-            <div class="logo-icon">🌊</div>
+            <div class="logo-icon">
+                🌊
+            </div>
 
             <div>
+
                 <h1>Furina</h1>
-                <span>Monitora</span>
+
+                <span>Monitora 2.0</span>
+
             </div>
 
         </div>
@@ -39,7 +74,11 @@
             <h3>Servidor</h3>
 
             <select id="guildSelect">
-                <option>Carregando...</option>
+
+                <option>
+                    Carregando...
+                </option>
+
             </select>
 
         </div>
@@ -49,20 +88,56 @@
             <h3>Canal</h3>
 
             <select id="channelSelect">
-                <option>Selecione...</option>
+
+                <option>
+                    Carregando...
+                </option>
+
             </select>
 
         </div>
 
-        <button id="definirCanalBtn" class="primary-btn">
+        <button
+            id="definirCanalBtn"
+            class="primary-btn"
+        >
             Aplicar Canal
         </button>
 
-        <button id="updatesBtn" class="secondary-btn">
+        <button
+            id="updatesBtn"
+            class="secondary-btn"
+        >
             🚀 Atualizações
         </button>
 
+        <div class="sidebar-info">
+
+            <div class="info-box">
+
+                <span>Servidor Atual</span>
+
+                <strong id="currentGuild">
+                    ---
+                </strong>
+
+            </div>
+
+            <div class="info-box">
+
+                <span>Canal Atual</span>
+
+                <strong id="currentChannel">
+                    ---
+                </strong>
+
+            </div>
+
+        </div>
+
     </aside>
+
+    <!-- CHAT -->
 
     <main class="chat-section">
 
@@ -70,9 +145,13 @@
 
             <div>
 
-                <h2>Monitoramento em Tempo Real</h2>
+                <h2>
+                    Monitoramento em Tempo Real
+                </h2>
 
-                <p>Mensagens recebidas diretamente do Discord</p>
+                <p>
+                    Painel conectado ao Discord
+                </p>
 
             </div>
 
@@ -81,14 +160,19 @@
                 <span class="status-dot"></span>
 
                 <span id="socketStatus">
+
                     Conectando...
+
                 </span>
 
             </div>
 
         </header>
 
-        <div id="messages" class="messages"></div>
+        <div
+            id="messages"
+            class="messages"
+        ></div>
 
         <div class="chat-input">
 
@@ -99,24 +183,94 @@
             ></textarea>
 
             <button id="enviarBtn">
+
                 Enviar
+
             </button>
 
         </div>
 
         <small>
+
             Enter para enviar • Shift + Enter para nova linha
+
         </small>
 
     </main>
+
+    <!-- PAINEL DIREITO -->
 
     <aside class="right-panel">
 
         <div class="panel-card">
 
-            <h3>Status</h3>
+            <h3>
+                Estatísticas
+            </h3>
 
-            <div id="status"></div>
+            <div class="stats-grid">
+
+                <div class="stat-box">
+
+                    <span>
+                        Ping
+                    </span>
+
+                    <strong id="botPing">
+                        --
+                    </strong>
+
+                </div>
+
+                <div class="stat-box">
+
+                    <span>
+                        Mensagens
+                    </span>
+
+                    <strong id="totalMessages">
+                        0
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="panel-card">
+
+            <h3>
+                Usuários Monitorados
+            </h3>
+
+            <div id="status">
+
+            </div>
+
+        </div>
+
+        <div class="panel-card">
+
+            <h3>
+                Sistema
+            </h3>
+
+            <div class="system-info">
+
+                <div>
+                    🌐 Railway
+                </div>
+
+                <div>
+                    🔌 Socket.IO
+                </div>
+
+                <div>
+                    🤖 Discord.js
+                </div>
+
+            </div>
 
         </div>
 
@@ -124,38 +278,54 @@
 
 </div>
 
-<div id="updatesModal" class="modal">
+<!-- MODAL -->
+
+<div
+    id="updatesModal"
+    class="modal"
+>
 
     <div class="modal-content">
 
         <div class="modal-header">
 
-            <h2>🚀 Atualização 26.0.2</h2>
+            <h2>
+
+                🚀 Atualização
+
+            </h2>
 
             <button id="closeModal">
+
                 ✕
+
             </button>
 
         </div>
 
-        <div class="changelog">
+        <textarea
+            id="updateEditor"
+            class="update-editor"
+        >🚀 Atualização 26.0.2
 
-            <div>[+] Sistema de canais dinâmicos</div>
-            <div>[+] Integração Socket.IO</div>
-            <div>[+] Novo visual Furina</div>
-            <div>[+] Melhorias de estabilidade</div>
-            <div>[+] Correções de bugs</div>
-
-        </div>
+[+] Sistema de canais dinâmicos
+[+] Melhorias Socket.IO
+[+] Novo visual Furina
+[+] Correções de bugs
+[+] Performance aprimorada</textarea>
 
         <div class="modal-actions">
 
             <button id="copyUpdate">
+
                 Copiar
+
             </button>
 
             <button id="sendUpdate">
+
                 Enviar Discord
+
             </button>
 
         </div>
@@ -163,6 +333,10 @@
     </div>
 
 </div>
+
+<!-- TOASTS -->
+
+<div id="toastContainer"></div>
 
 <script src="app.js"></script>
 
