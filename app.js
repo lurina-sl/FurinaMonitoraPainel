@@ -5,6 +5,10 @@ const socket = io(API_URL, {
     transports: ["websocket"]
 });
 
+/* =========================
+   ELEMENTOS
+========================= */
+
 const messages =
     document.getElementById("messages");
 
@@ -20,27 +24,125 @@ const textarea =
 const statusDiv =
     document.getElementById("status");
 
-/* STATUS SOCKET */
+const socketStatus =
+    document.getElementById("socketStatus");
+
+const pingElement =
+    document.getElementById("botPing");
+
+const totalMsgElement =
+    document.getElementById("totalMessages");
+
+const currentGuild =
+    document.getElementById("currentGuild");
+
+const currentChannel =
+    document.getElementById("currentChannel");
+
+/* =========================
+   TOAST
+========================= */
+
+function toast(text, type = "success") {
+
+    const toast =
+        document.createElement("div");
+
+    toast.className =
+        `toast ${type}`;
+
+    toast.textContent =
+        text;
+
+    document.body.appendChild(
+        toast
+    );
+
+    setTimeout(() => {
+
+        toast.classList.add(
+            "show"
+        );
+
+    }, 50);
+
+    setTimeout(() => {
+
+        toast.remove();
+
+    }, 3000);
+
+}
+
+/* =========================
+   SOCKET
+========================= */
 
 socket.on("connect", () => {
 
-    document.getElementById(
-        "socketStatus"
-    ).textContent =
+    socketStatus.textContent =
         "Conectado";
+
+    socketStatus.style.color =
+        "#4eff87";
 
 });
 
 socket.on("disconnect", () => {
 
-    document.getElementById(
-        "socketStatus"
-    ).textContent =
+    socketStatus.textContent =
         "Desconectado";
+
+    socketStatus.style.color =
+        "#ff5b5b";
 
 });
 
-/* SERVIDORES */
+/* =========================
+   STATUS
+========================= */
+
+async function carregarStatus() {
+
+    try {
+
+        const res =
+            await fetch(
+                `${API_URL}/api/status`
+            );
+
+        const data =
+            await res.json();
+
+        if (pingElement) {
+
+            pingElement.textContent =
+                `${data.ping}ms`;
+
+        }
+
+        if (totalMsgElement) {
+
+            totalMsgElement.textContent =
+                data.totalMensagens;
+        }
+
+    } catch (err) {
+
+        console.error(err);
+
+    }
+
+}
+
+setInterval(
+    carregarStatus,
+    5000
+);
+
+/* =========================
+   SERVIDORES
+========================= */
 
 async function carregarServidores() {
 
@@ -54,7 +156,8 @@ async function carregarServidores() {
         const guilds =
             await resposta.json();
 
-        guildSelect.innerHTML = "";
+        guildSelect.innerHTML =
+            "";
 
         guilds.forEach(guild => {
 
@@ -67,7 +170,7 @@ async function carregarServidores() {
                 guild.id;
 
             option.textContent =
-                guild.name;
+                `${guild.name} (${guild.members})`;
 
             guildSelect.appendChild(
                 option
@@ -76,6 +179,9 @@ async function carregarServidores() {
         });
 
         if (guilds.length) {
+
+            currentGuild.textContent =
+                guilds[0].name;
 
             carregarCanais(
                 guilds[0].id
@@ -87,11 +193,18 @@ async function carregarServidores() {
 
         console.error(err);
 
+        toast(
+            "Erro ao carregar servidores",
+            "error"
+        );
+
     }
 
 }
 
-/* CANAIS */
+/* =========================
+   CANAIS
+========================= */
 
 async function carregarCanais(
     guildId
@@ -129,6 +242,13 @@ async function carregarCanais(
 
         });
 
+        if (canais.length) {
+
+            currentChannel.textContent =
+                canais[0].name;
+
+        }
+
     } catch (err) {
 
         console.error(err);
@@ -141,6 +261,11 @@ guildSelect.addEventListener(
     "change",
     () => {
 
+        currentGuild.textContent =
+            guildSelect.options[
+                guildSelect.selectedIndex
+            ].text;
+
         carregarCanais(
             guildSelect.value
         );
@@ -148,7 +273,21 @@ guildSelect.addEventListener(
     }
 );
 
-/* DEFINIR CANAL */
+channelSelect.addEventListener(
+    "change",
+    () => {
+
+        currentChannel.textContent =
+            channelSelect.options[
+                channelSelect.selectedIndex
+            ].text;
+
+    }
+);
+
+/* =========================
+   DEFINIR CANAL
+========================= */
 
 document
 .getElementById(
@@ -158,29 +297,46 @@ document
     "click",
     async () => {
 
-        await fetch(
-            `${API_URL}/api/set-channel`,
-            {
-                method:"POST",
-                headers:{
-                    "Content-Type":
-                    "application/json"
-                },
-                body:JSON.stringify({
-                    channelId:
-                    channelSelect.value
-                })
-            }
-        );
+        try {
 
-        alert(
-            "Canal definido."
-        );
+            await fetch(
+                `${API_URL}/api/set-channel`,
+                {
+                    method:
+                        "POST",
+
+                    headers: {
+                        "Content-Type":
+                        "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            channelId:
+                            channelSelect.value
+                        })
+                }
+            );
+
+            toast(
+                "Canal definido com sucesso"
+            );
+
+        } catch {
+
+            toast(
+                "Erro ao definir canal",
+                "error"
+            );
+
+        }
 
     }
 );
 
-/* AUTO RESIZE */
+/* =========================
+   AUTO RESIZE
+========================= */
 
 textarea.addEventListener(
     "input",
@@ -196,7 +352,9 @@ textarea.addEventListener(
     }
 );
 
-/* ENVIAR */
+/* =========================
+   ENVIAR
+========================= */
 
 function enviarMensagem() {
 
@@ -216,6 +374,10 @@ function enviarMensagem() {
 
     textarea.style.height =
         "auto";
+
+    toast(
+        "Mensagem enviada"
+    );
 
 }
 
@@ -246,7 +408,40 @@ textarea.addEventListener(
     }
 );
 
-/* MENSAGENS */
+/* =========================
+   HISTÓRICO
+========================= */
+
+async function carregarHistorico() {
+
+    try {
+
+        const res =
+            await fetch(
+                `${API_URL}/api/history`
+            );
+
+        const data =
+            await res.json();
+
+        messages.innerHTML =
+            "";
+
+        data.forEach(
+            adicionarMensagem
+        );
+
+    } catch (err) {
+
+        console.error(err);
+
+    }
+
+}
+
+/* =========================
+   MENSAGENS
+========================= */
 
 function adicionarMensagem(
     data
@@ -258,7 +453,7 @@ function adicionarMensagem(
         );
 
     div.className =
-        "message";
+        "message new-message";
 
     div.innerHTML = `
         <img
@@ -301,17 +496,28 @@ socket.on(
     adicionarMensagem
 );
 
-/* ONLINE */
+/* =========================
+   ONLINE / OFFLINE
+========================= */
 
 socket.on(
     "online",
     data => {
 
-        statusDiv.innerHTML += `
-            <div>
-                🟢 ${data.user}
-            </div>
-        `;
+        const div =
+            document.createElement(
+                "div"
+            );
+
+        div.className =
+            "status-online";
+
+        div.innerHTML =
+            `🟢 ${data.user}`;
+
+        statusDiv.appendChild(
+            div
+        );
 
     }
 );
@@ -320,16 +526,27 @@ socket.on(
     "offline",
     data => {
 
-        statusDiv.innerHTML += `
-            <div>
-                🔴 ${data.user}
-            </div>
-        `;
+        const div =
+            document.createElement(
+                "div"
+            );
+
+        div.className =
+            "status-offline";
+
+        div.innerHTML =
+            `🔴 ${data.user}`;
+
+        statusDiv.appendChild(
+            div
+        );
 
     }
 );
 
-/* MODAL */
+/* =========================
+   MODAL UPDATE
+========================= */
 
 const modal =
     document.getElementById(
@@ -362,16 +579,9 @@ document
 
 };
 
-/* CHANGLEOG */
-
-const changelog =
-`🚀 Atualização 26.0.2
-
-[+] Sistema de canais
-[+] Melhorias Socket.IO
-[+] Novo visual Furina
-[+] Correções de bugs
-[+] Performance aprimorada`;
+/* =========================
+   CHANGELOG
+========================= */
 
 document
 .getElementById(
@@ -380,9 +590,22 @@ document
 .onclick =
 async () => {
 
-    await navigator.clipboard
-    .writeText(
-        changelog
+    const texto =
+        document
+        .getElementById(
+            "updateEditor"
+        )
+        ?.value ||
+        "";
+
+    await navigator
+        .clipboard
+        .writeText(
+            texto
+        );
+
+    toast(
+        "Copiado"
     );
 
 };
@@ -394,14 +617,97 @@ document
 .onclick =
 () => {
 
+    const texto =
+        document
+        .getElementById(
+            "updateEditor"
+        )
+        ?.value ||
+        "";
+
     socket.emit(
         "enviarParaDiscord",
         {
             mensagem:
-            changelog
+                texto
         }
+    );
+
+    toast(
+        "Atualização enviada"
     );
 
 };
 
+/* =========================
+   LOGIN
+========================= */
+
+const loginBtn =
+    document.getElementById(
+        "loginBtn"
+    );
+
+if (loginBtn) {
+
+    loginBtn.onclick =
+    async () => {
+
+        const senha =
+            document.getElementById(
+                "loginPassword"
+            ).value;
+
+        const res =
+            await fetch(
+                `${API_URL}/api/login`,
+                {
+                    method:
+                        "POST",
+
+                    headers: {
+                        "Content-Type":
+                        "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            senha
+                        })
+                }
+            );
+
+        if (
+            res.ok
+        ) {
+
+            document
+                .getElementById(
+                    "loginScreen"
+                )
+                .remove();
+
+            toast(
+                "Login realizado"
+            );
+
+        } else {
+
+            toast(
+                "Senha incorreta",
+                "error"
+            );
+
+        }
+
+    };
+
+}
+
+/* =========================
+   INIT
+========================= */
+
 carregarServidores();
+carregarHistorico();
+carregarStatus();
