@@ -277,26 +277,19 @@ body{
 
 }
 
-.logo-icon{
+.logo-img{
 
     width:70px;
     height:70px;
 
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    font-size:34px;
-
     border-radius:20px;
 
-    background:linear-gradient(
-        135deg,
-        var(--hydro),
-        var(--hydro2)
-    );
+    object-fit:cover;
 
-    box-shadow:0 0 30px #49b7ff55;
+    border:2px solid var(--hydro);
+
+    box-shadow:
+        0 0 25px rgba(116,221,255,.4);
 
 }
 
